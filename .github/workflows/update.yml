@@ -1,0 +1,32 @@
+name: 공모주 캘린더 자동 업데이트
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 매일 한국시간 오전 9시
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 가져오기
+        uses: actions/checkout@v4
+
+      - name: 파이썬 설치
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 라이브러리 설치
+        run: pip install requests beautifulsoup4 icalendar pytz
+
+      - name: 스크립트 실행
+        run: python generate_ipo_ics.py
+
+      - name: 변경사항 저장
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add ipo.ics
+          git commit -m "공모주 일정 업데이트" || exit 0
+          git push
