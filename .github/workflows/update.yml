@@ -1,28 +1,34 @@
-name: 공모주 캘린더 자동 업데이트
+name: 공모주 캘린더 자동 업데이트  # 워크플로 이름
 
 on:
   schedule:
     - cron: '0 0 * * *'  # 매일 한국시간 오전 9시
-  workflow_dispatch:
+  workflow_dispatch:     # 수동 실행 가능
 
 jobs:
   update:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 저장소 가져오기
-        uses: actions/checkout@v4
+    runs-on: ubuntu-latest  # GitHub Actions 서버 환경
 
+    steps:
+      # 1️⃣ 레포 코드 가져오기 단계
+      - name: 저장소 가져오기
+        uses: actions/checkout@v4   # ← 여기 붙여넣기
+
+      # 2️⃣ 파이썬 설치 단계
       - name: 파이썬 설치
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
+      # 3️⃣ 필요한 라이브러리 설치 단계
       - name: 라이브러리 설치
         run: pip install requests beautifulsoup4 icalendar pytz
 
+      # 4️⃣ 스크립트 실행 단계
       - name: 스크립트 실행
         run: python generate_ipo_ics.py
 
+      # 5️⃣ 생성된 파일 커밋 & 푸시 단계
       - name: 변경사항 저장
         run: |
           git config user.name "GitHub Actions"
